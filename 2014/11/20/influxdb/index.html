@@ -1,0 +1,357 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>influxdb | esaysg</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="lutos">
+    
+    <meta name="description" content="基本概念
+InfluxDB 是一个开源分布式时序、事件和指标数据库。使用 Go语言编写，无需外部依赖。其设计目标是实现分布式和水平伸缩扩展。
+shardspace:  shard的集合。可以配置shard时间属性及集群属性：rf=3,split=3
+shard:  按时间(begin, end)将数">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="esaysg" title="esaysg"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="esaysg">esaysg</a></h1>
+				<h2 class="blog-motto">一个无聊的人</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:easysg.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/11/20/influxdb/" title="influxdb" itemprop="url">influxdb</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://easysg.github.io" title="lutos">lutos</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-11-20T06:39:36.000Z" itemprop="datePublished">2014-11月-20</time>
+    更新日期:<time datetime="2014-11-20T10:02:39.000Z" itemprop="dateModified">2014-11月-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装"><span class="toc-number">2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#api"><span class="toc-number">3.</span> <span class="toc-text">api</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#集群"><span class="toc-number">4.</span> <span class="toc-text">集群</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#展示(dashboard)"><span class="toc-number">5.</span> <span class="toc-text">展示(dashboard)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#other"><span class="toc-number">6.</span> <span class="toc-text">other</span></a></li></ol>
+		</div>
+		
+		<h4 id="基本概念">基本概念</h4>
+<p>InfluxDB 是一个开源分布式时序、事件和指标数据库。使用 Go语言编写，无需外部依赖。其设计目标是实现分布式和水平伸缩扩展。</p>
+<p>shardspace:  shard的集合。可以配置shard时间属性及集群属性：rf=3,split=3</p>
+<p>shard:  按时间(begin, end)将数据存储节点，当now &gt; end时，创建一个新的shard.</p>
+<p>Series: 存储结构，相当于表名</p>
+<p>point: 记录， 相当于表的行。</p>
+<h4 id="安装">安装</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">wget http://s3.amazonaws.com/influxdb/influxdb_latest_amd64.deb</div><div class="line"><span class="built_in">sudo</span> dpkg -i influxdb_latest_amd64.deb</div><div class="line"></div><div class="line">ls <span class="operator">-l</span> /opt/influxdb</div><div class="line"></div><div class="line"><span class="built_in">sudo</span> /etc/init.d/influxdb start</div></pre></td></tr></table></figure>
+
+<h4 id="api">api</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="operator"><span class="keyword">select</span> <span class="keyword">value</span> <span class="keyword">from</span> response_times</span></div><div class="line"><span class="keyword">where</span> <span class="keyword">time</span> &gt; <span class="string">'2013-08-12 23:32:01.232'</span> <span class="keyword">and</span> <span class="keyword">time</span> &lt; <span class="string">'2013-08-13'</span>;</div><div class="line"></div><div class="line"><span class="operator"><span class="keyword">select</span> <span class="keyword">value</span> <span class="keyword">from</span> response_times <span class="keyword">where</span> <span class="keyword">time</span> &gt; <span class="keyword">now</span>() - <span class="number">1</span>h <span class="keyword">limit</span> <span class="number">1000</span>;</span></div><div class="line"></div><div class="line"><span class="operator"><span class="keyword">select</span> * <span class="keyword">from</span> /^stats\./i <span class="keyword">where</span> <span class="keyword">time</span> &gt; <span class="keyword">now</span>() - <span class="number">1</span>h;</span></div><div class="line"></div><div class="line"><span class="operator"><span class="keyword">select</span> percentile(<span class="keyword">value</span>, <span class="number">95</span>) <span class="keyword">from</span> response_times <span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">time</span>(<span class="number">30</span>s);</span></div><div class="line"></div><div class="line"><span class="operator"><span class="keyword">select</span> hosta.<span class="keyword">value</span> + hostb.<span class="keyword">value</span></span></div><div class="line"><span class="keyword">from</span> cpu_load <span class="keyword">as</span> hosta</div><div class="line"><span class="keyword">inner</span> <span class="keyword">join</span> cpu_load <span class="keyword">as</span> hostb</div><div class="line"><span class="keyword">where</span> hosta.host = <span class="string">'hosta.influxdb.orb'</span> <span class="keyword">and</span> hostb.host = <span class="string">'hostb.influxdb.org'</span>;</div><div class="line"></div><div class="line"><span class="operator"><span class="keyword">select</span> percentile(<span class="keyword">value</span>, <span class="number">95</span>) <span class="keyword">from</span> response_times <span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">time</span>(<span class="number">5</span>m) </span></div><div class="line"><span class="keyword">into</span> response_times.percentiles<span class="number">.5</span>m<span class="number">.95</span></div><div class="line"></div><div class="line"><span class="keyword">select</span> <span class="keyword">count</span>(type) <span class="keyword">from</span> <span class="keyword">events</span> <span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">time</span>(<span class="number">10</span>m), type </div><div class="line"><span class="keyword">into</span> <span class="keyword">events</span>.count_per_type<span class="number">.10</span>m</div></pre></td></tr></table></figure>
+
+<h4 id="集群">集群</h4>
+<ul>
+<li>配置</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">service influxdb stop</div><div class="line">rm -rf <span class="regexp">/opt/i</span>nfluxdb<span class="regexp">/shared/</span>data</div><div class="line"></div><div class="line">vim <span class="regexp">/opt/i</span>nfluxdb<span class="regexp">/shared/</span>config.toml</div><div class="line"><span class="comment">//群集中的几台, raft通信端口9191，数据同步的端口8099</span></div><div class="line">seed-servers = [<span class="string">"192.168.1.100:9191"</span>, <span class="string">"192.168.1.101:9191"</span>]  </div><div class="line">replication-factor = <span class="number">3</span> <span class="comment">//也通过rest修改shardspace: rf=3,split=3(要在now &gt; 前一个shard的endTime生效)</span></div><div class="line"></div><div class="line">service influxdb start</div></pre></td></tr></table></figure>
+
+<ul>
+<li>他节点也一样。</li>
+</ul>
+<h4 id="展示(dashboard)">展示(dashboard)</h4>
+<p>可与<a href="https://github.com/torkelo/grafana" target="_blank" rel="external">Grafana</a>配合展示</p>
+<h4 id="other">other</h4>
+<p>与OpenTSDB比较</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/soft/">soft</a><a href="/tags/influxdb/">influxdb</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/学习/">学习</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://easysg.github.io/2014/11/20/influxdb/" data-title="influxdb | esaysg" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2014/11/19/metrics/"  title="metrics">
+ <strong>NEXT:</strong><br/> 
+ <span>metrics
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装"><span class="toc-number">2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#api"><span class="toc-number">3.</span> <span class="toc-text">api</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#集群"><span class="toc-number">4.</span> <span class="toc-text">集群</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#展示(dashboard)"><span class="toc-number">5.</span> <span class="toc-text">展示(dashboard)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#other"><span class="toc-number">6.</span> <span class="toc-text">other</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/java/" title="java">java<sup>1</sup></a></li>
+		
+			<li><a href="/categories/学习/" title="学习">学习<sup>1</sup></a></li>
+		
+			<li><a href="/categories/日志/" title="日志">日志<sup>0</sup></a></li>
+		
+			<li><a href="/categories/生活/" title="生活">生活<sup>2</sup></a></li>
+		
+			<li><a href="/categories/生活/编程/" title="编程">编程<sup>2</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/hexo/" title="hexo">hexo<sup>1</sup></a></li>
+		
+			<li><a href="/tags/influxdb/" title="influxdb">influxdb<sup>1</sup></a></li>
+		
+			<li><a href="/tags/metrics/" title="metrics">metrics<sup>1</sup></a></li>
+		
+			<li><a href="/tags/shiro/" title="shiro">shiro<sup>1</sup></a></li>
+		
+			<li><a href="/tags/soft/" title="soft">soft<sup>1</sup></a></li>
+		
+			<li><a href="/tags/开始/" title="开始">开始<sup>0</sup></a></li>
+		
+			<li><a href="/tags/我/" title="我">我<sup>0</sup></a></li>
+		
+			<li><a href="/tags/日记/" title="日记">日记<sup>0</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://easysg.github.io" target="_blank" title="lutos">lutos</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

@@ -4,12 +4,23 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>shiro | esaysg</title>
+    <title>java-gc | esaysg</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="lutos">
     
-    <meta name="description" content="流程">
+    <meta name="description" content="内存模型
+分区:
+
+Young GenerationEden Area, Survivor 0, Survivor 1
+
+Old Generation
+
+Permanent Generation
+
+
+参数：
+123456789-Xms1024m-Xmx1024m-Xmn128m-XX:PermSiz">
     
     
     
@@ -66,15 +77,15 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/10/28/shiro/" title="shiro" itemprop="url">shiro</a>
+      <a href="/2015/01/15/java-gc/" title="java-gc" itemprop="url">java-gc</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://easysg.github.io" title="lutos">lutos</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-10-28T10:33:30.000Z" itemprop="datePublished">2014-10月-28</time>
-    更新日期:<time datetime="2014-11-19T05:27:01.000Z" itemprop="dateModified">2014-11月-19</time>
+    <time datetime="2015-01-15T03:02:24.000Z" itemprop="datePublished">2015-1月-15</time>
+    更新日期:<time datetime="2015-01-15T04:41:27.000Z" itemprop="dateModified">2015-1月-15</time>
     
   </p>
 </header>
@@ -83,30 +94,56 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#流程"><span class="toc-number">1.</span> <span class="toc-text">流程</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#内存模型"><span class="toc-number">1.</span> <span class="toc-text">内存模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GC"><span class="toc-number">2.</span> <span class="toc-text">GC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#gc_log"><span class="toc-number">3.</span> <span class="toc-text">gc log</span></a></li></ol>
 		</div>
 		
-		<h4 id="流程">流程</h4>
+		<h4 id="内存模型">内存模型</h4>
+<p>分区:</p>
+<ul>
+<li><p>Young Generation<br>Eden Area, Survivor 0, Survivor 1</p>
+</li>
+<li><p>Old Generation</p>
+</li>
+<li><p>Permanent Generation</p>
+</li>
+</ul>
+<p>参数：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">-<span class="ruby"><span class="constant">Xms1024m</span></span></div><div class="line">-<span class="ruby"><span class="constant">Xmx1024m</span></span></div><div class="line">-<span class="ruby"><span class="constant">Xmn128m</span></span></div><div class="line">-<span class="ruby"><span class="constant">XX</span><span class="symbol">:PermSize=</span><span class="number">384</span>m</span></div><div class="line">-<span class="ruby"><span class="constant">XX</span><span class="symbol">:MaxPermSize=</span><span class="number">384</span>m</span></div><div class="line">-<span class="ruby"><span class="constant">XX</span><span class="symbol">:SurvivorRatio=</span><span class="number">8</span></span></div><div class="line">-<span class="ruby"><span class="constant">XX</span><span class="symbol">:NewRatio=</span><span class="number">2</span></span></div><div class="line">-<span class="ruby"><span class="constant">XX</span><span class="symbol">:NewSize=</span><span class="number">128</span>m</span></div><div class="line">-<span class="ruby"><span class="constant">XX</span><span class="symbol">:MaxNewSize=</span><span class="number">128</span>m</span></div></pre></td></tr></table></figure>
+
+<p>周期：</p>
+<ol>
+<li>对象被创建时在eden区，当eden区满的时候执行Minor GC,清除不可达对象，并将剩余对象复制到Survivor 0区。</li>
+<li>当Survivor 0也满时，清除Survivor 0中不可达对象，复制到Survivor 1.(以后eden满时就复制到Survivor 1,这样总有一个Survivor是空的)</li>
+<li>在两区交换达-XX:MaxTenuringThreshold=15时进入old generation</li>
+</ol>
+<p>如图<img src="/img/younggc.png" alt="memory" title="young gc"></p>
+<h4 id="GC">GC</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseSerialGC</span>   		<span class="constant">Serial</span> + <span class="constant">Serial</span> <span class="constant">Old</span></div><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseParallelGC</span> 		<span class="constant">Parallel</span> <span class="constant">Scavenge</span> + <span class="constant">Serial</span> <span class="constant">Old</span></div><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseParallelOldGC</span>           <span class="constant">Parallel</span> <span class="constant">Scavenge</span> + <span class="constant">Parallel</span> <span class="constant">Old</span></div><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseConcMarkSweepGC</span>         <span class="constant">Serial</span>|<span class="constant">ParNew</span> + <span class="constant">CMS</span> + <span class="constant">Serial</span> <span class="constant">Old</span>  </div><div class="line"> init mark</div><div class="line"> concurrent mark</div><div class="line"> remark</div><div class="line"> concurrent clear</div><div class="line"> concurrent reset</div><div class="line"></div><div class="line">-<span class="constant">XX</span><span class="symbol">:+UseG1GC</span>  适用于大内存和多cpu情况</div><div class="line"> java -<span class="constant">Xmx50m</span> -<span class="constant">Xms50m</span> -<span class="constant">XX</span><span class="symbol">:+UseG1GC</span> -<span class="constant">XX</span><span class="symbol">:MaxGCPauseMillis=</span><span class="number">200</span></div></pre></td></tr></table></figure>
+
+<p><img src="/img/gc.jpg" alt="gc" title="young gc"></p>
+<h4 id="gc_log">gc log</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">-<span class="ruby"><span class="constant">XX</span><span class="symbol">:+PrintGCDetails</span></span></div><div class="line">-<span class="ruby"><span class="constant">XX</span><span class="symbol">:+PrintGCTimeStamps</span></span></div><div class="line">-<span class="ruby"><span class="constant">XX</span><span class="symbol">:+PrintHeapAtGC</span></span></div><div class="line">-<span class="ruby"><span class="constant">Xloggc</span><span class="symbol">:/export/logs/xxxx/gc</span>.log</span></div></pre></td></tr></table></figure>
+
   
 	</div>
 		<footer class="article-footer clearfix">
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/shiro/">shiro</a>
+  <span></span> <a href="/tags/编程/">编程</a>
   </div>
 
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/生活/">生活</a>►<a class="article-category-link" href="/categories/生活/编程/">编程</a>
+  <a class="article-category-link" href="/categories/java/">java</a>
 </div>
 
 
 
 <div class="article-share" id="share">
 
-  <div data-url="http://easysg.github.io/2014/10/28/shiro/" data-title="shiro | esaysg" data-tsina="null" class="share clearfix">
+  <div data-url="http://easysg.github.io/2015/01/15/java-gc/" data-title="java-gc | esaysg" data-tsina="null" class="share clearfix">
   </div>
 
 </div>
@@ -115,14 +152,14 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2014/10/28/first/" title="first">
-  <strong>PREVIOUS:</strong><br/>
-  <span>
-  first</span>
+
+<div class="next">
+<a href="/2014/11/20/influxdb/"  title="influxdb">
+ <strong>NEXT:</strong><br/> 
+ <span>influxdb
+</span>
 </a>
 </div>
-
 
 </nav>
 
@@ -132,7 +169,7 @@
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#流程"><span class="toc-number">1.</span> <span class="toc-text">流程</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#内存模型"><span class="toc-number">1.</span> <span class="toc-text">内存模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GC"><span class="toc-number">2.</span> <span class="toc-text">GC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#gc_log"><span class="toc-number">3.</span> <span class="toc-text">gc log</span></a></li></ol>
   </div>
 
 <div id="asidepart">

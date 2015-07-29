@@ -85,7 +85,7 @@ Permanent Generation
     </p>
   <p class="article-time">
     <time datetime="2015-01-15T03:02:24.000Z" itemprop="datePublished">2015-1月-15</time>
-    更新日期:<time datetime="2015-01-15T04:41:27.000Z" itemprop="dateModified">2015-1月-15</time>
+    更新日期:<time datetime="2015-01-15T09:02:42.000Z" itemprop="dateModified">2015-1月-15</time>
     
   </p>
 </header>
@@ -118,7 +118,7 @@ Permanent Generation
 </ol>
 <p>如图<img src="/img/younggc.png" alt="memory" title="young gc"></p>
 <h4 id="GC">GC</h4>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseSerialGC</span>   		<span class="constant">Serial</span> + <span class="constant">Serial</span> <span class="constant">Old</span></div><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseParallelGC</span> 		<span class="constant">Parallel</span> <span class="constant">Scavenge</span> + <span class="constant">Serial</span> <span class="constant">Old</span></div><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseParallelOldGC</span>           <span class="constant">Parallel</span> <span class="constant">Scavenge</span> + <span class="constant">Parallel</span> <span class="constant">Old</span></div><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseConcMarkSweepGC</span>         <span class="constant">Serial</span>|<span class="constant">ParNew</span> + <span class="constant">CMS</span> + <span class="constant">Serial</span> <span class="constant">Old</span>  </div><div class="line"> init mark</div><div class="line"> concurrent mark</div><div class="line"> remark</div><div class="line"> concurrent clear</div><div class="line"> concurrent reset</div><div class="line"></div><div class="line">-<span class="constant">XX</span><span class="symbol">:+UseG1GC</span>  适用于大内存和多cpu情况</div><div class="line"> java -<span class="constant">Xmx50m</span> -<span class="constant">Xms50m</span> -<span class="constant">XX</span><span class="symbol">:+UseG1GC</span> -<span class="constant">XX</span><span class="symbol">:MaxGCPauseMillis=</span><span class="number">200</span></div></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseSerialGC</span>   		<span class="constant">Serial</span> + <span class="constant">Serial</span> <span class="constant">Old</span></div><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseParallelGC</span> 		<span class="constant">Parallel</span> <span class="constant">Scavenge</span> + <span class="constant">Serial</span> <span class="constant">Old</span></div><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseParallelOldGC</span>           <span class="constant">Parallel</span> <span class="constant">Scavenge</span> + <span class="constant">Parallel</span> <span class="constant">Old</span></div><div class="line">–<span class="constant">XX</span><span class="symbol">:+UseConcMarkSweepGC</span>         <span class="constant">Serial</span>|<span class="constant">ParNew</span> + <span class="constant">CMS</span> + <span class="constant">Serial</span> <span class="constant">Old</span>  </div><div class="line"> init mark</div><div class="line"> concurrent mark</div><div class="line"> remark</div><div class="line"> concurrent clear</div><div class="line"> concurrent reset</div><div class="line"> 有碎片化问题</div><div class="line"></div><div class="line">-<span class="constant">XX</span><span class="symbol">:+UseG1GC</span>  适用于大内存和多cpu情况</div><div class="line"> 分区(<span class="number">1</span>m-<span class="number">32</span>m),每区都可扮演young,survivor,old</div><div class="line"> gc时回收垃圾最多的区(garbage first),剩余复制到新区</div><div class="line"> java -<span class="constant">Xmx50m</span> -<span class="constant">Xms50m</span> -<span class="constant">XX</span><span class="symbol">:+UseG1GC</span> -<span class="constant">XX</span><span class="symbol">:MaxGCPauseMillis=</span><span class="number">200</span></div></pre></td></tr></table></figure>
 
 <p><img src="/img/gc.jpg" alt="gc" title="young gc"></p>
 <h4 id="gc_log">gc log</h4>
@@ -152,6 +152,14 @@ Permanent Generation
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2015/07/29/MySQL-事务没有提交导致-锁等待-Lock-wait-timeout-exceeded/" title="MySQL 事务没有提交导致 锁等待 Lock wait timeout exceeded">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  MySQL 事务没有提交导致 锁等待 Lock wait timeout exceeded</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2014/11/20/influxdb/"  title="influxdb">
@@ -181,11 +189,9 @@ Permanent Generation
 	<p class="asidetitle">分类</p>
 		<ul>
 		
-			<li><a href="/categories/java/" title="java">java<sup>2</sup></a></li>
+			<li><a href="/categories/java/" title="java">java<sup>3</sup></a></li>
 		
 			<li><a href="/categories/学习/" title="学习">学习<sup>1</sup></a></li>
-		
-			<li><a href="/categories/日志/" title="日志">日志<sup>0</sup></a></li>
 		
 			<li><a href="/categories/生活/" title="生活">生活<sup>2</sup></a></li>
 		
@@ -206,15 +212,13 @@ Permanent Generation
 		
 			<li><a href="/tags/metrics/" title="metrics">metrics<sup>1</sup></a></li>
 		
+			<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+		
 			<li><a href="/tags/shiro/" title="shiro">shiro<sup>1</sup></a></li>
 		
 			<li><a href="/tags/soft/" title="soft">soft<sup>1</sup></a></li>
 		
-			<li><a href="/tags/开始/" title="开始">开始<sup>0</sup></a></li>
-		
-			<li><a href="/tags/我/" title="我">我<sup>0</sup></a></li>
-		
-			<li><a href="/tags/日记/" title="日记">日记<sup>0</sup></a></li>
+			<li><a href="/tags/tranaction/" title="tranaction">tranaction<sup>1</sup></a></li>
 		
 			<li><a href="/tags/编程/" title="编程">编程<sup>1</sup></a></li>
 		

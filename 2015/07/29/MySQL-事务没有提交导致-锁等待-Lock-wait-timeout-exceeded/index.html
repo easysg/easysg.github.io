@@ -75,7 +75,7 @@
     </p>
   <p class="article-time">
     <time datetime="2015-07-29T10:16:27.000Z" itemprop="datePublished">2015-7月-29</time>
-    更新日期:<time datetime="2015-07-30T03:21:33.000Z" itemprop="dateModified">2015-7月-30</time>
+    更新日期:<time datetime="2015-07-30T03:25:06.000Z" itemprop="dateModified">2015-7月-30</time>
     
   </p>
 </header>
@@ -116,7 +116,7 @@
 <p>EC5在等EBC结束.  一个事务不能太大， 太大了会导致锁等，如果有相互锁的情况还会死锁的可能。</p>
 <h4 id="补充">补充</h4>
 <p>mysql相关超时配置</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">mysql driver:</div><div class="line">jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&connectTimeout=10000&socketTimeout=10000</div><div class="line">useUnicode 是否使用Unicode字符集，如果参数characterEncoding设置为gb2312或gbk，本参数值必须设置为true </div><div class="line">characterEncoding 当useUnicode设置为true时，指定字符编码。比如可设置为gb2312或gbk</div><div class="line">connectTimeout 和数据库服务器建立socket连接时的超时，单位：毫秒。 0表示永不超时，适用于JDK 1.4及更高版本</div><div class="line">socketTimeout socket操作（读写）超时，单位：毫秒。 0表示永不超时 </div><div class="line"></div><div class="line">mysql server:</div><div class="line">innodb_lock_wait_timeout 50  default 50s</div></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">mysql driver:</div><div class="line">jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&connectTimeout=10000&socketTimeout=10000</div><div class="line">useUnicode 是否使用Unicode字符集，如果参数characterEncoding设置为gb2312或gbk，本参数值必须设置为true </div><div class="line">characterEncoding 当useUnicode设置为true时，指定字符编码。比如可设置为gb2312或gbk</div><div class="line">connectTimeout 和数据库服务器建立socket连接时的超时，单位：毫秒。 0表示永不超时，适用于JDK 1.4及更高版本</div><div class="line">socketTimeout socket操作（读写）超时，单位：毫秒。 0表示永不超时 </div><div class="line"></div><div class="line"></div><div class="line">mysql server:</div><div class="line">innodb_lock_wait_timeout 50  default 50s</div><div class="line">具体可参看：</div><div class="line">http://netkiller.github.io/mysql/dcl/index.html</div></pre></td></tr></table></figure>
 
   
 	</div>
@@ -146,6 +146,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2015/08/17/netty-学习总结/" title="netty 学习总结">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  netty 学习总结</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2015/01/15/java-gc/"  title="java-gc">
@@ -158,6 +166,10 @@
 </nav>
 
 	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
@@ -175,7 +187,7 @@
 	<p class="asidetitle">分类</p>
 		<ul>
 		
-			<li><a href="/categories/java/" title="java">java<sup>3</sup></a></li>
+			<li><a href="/categories/java/" title="java">java<sup>4</sup></a></li>
 		
 			<li><a href="/categories/学习/" title="学习">学习<sup>1</sup></a></li>
 		
@@ -200,6 +212,8 @@
 		
 			<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
 		
+			<li><a href="/tags/netty/" title="netty">netty<sup>1</sup></a></li>
+		
 			<li><a href="/tags/shiro/" title="shiro">shiro<sup>1</sup></a></li>
 		
 			<li><a href="/tags/soft/" title="soft">soft<sup>1</sup></a></li>
@@ -207,6 +221,8 @@
 			<li><a href="/tags/tranaction/" title="tranaction">tranaction<sup>1</sup></a></li>
 		
 			<li><a href="/tags/编程/" title="编程">编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/网络/" title="网络">网络<sup>1</sup></a></li>
 		
 		</ul>
 </div>
@@ -350,6 +366,18 @@ $(document).ready(function(){
 });     
 </script>
 
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"easysg"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
 
 
 
